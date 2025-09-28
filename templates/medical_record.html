@@ -137,17 +137,17 @@
                         </thead>
 
                         <tbody>
-                            {% for row in data %}
+                            {% for record in records %}
                             <tr>
-                                <td>{{ row[1] }}</td> <!-- Assuming full_name is the first column in your database -->
-                                <td>{{ row[2] }}</td> <!-- Assuming age is the second column in your database -->
-                                <td>{{ row[3] }}</td> <!-- Assuming gender is the third column in your database -->
-                                <td>{{ row[4] }}</td>
-                                <td>{{ row[5] }}</td> <!-- Assuming gender is the third column in your database -->
-                                <td>{{ row[6] }}</td> 
-                                <td>{{ row[7] }}</td> <!-- Assuming gender is the third column in your database -->
-                                <td>{{ row[8] }}</td><!-- Assuming patient_condition is the fourth column in your database -->
-                                <td><a href="javascript:void(0);" onclick="startVideoCall('{{ row[0] }}')">Video Call</a></td>
+                                <td>{{ record.token }}</td>
+                                <td>{{ record.name }}</td>
+                                <td>{{ record.age }}</td>
+                                <td>{{ record.dob }}</td>
+                                <td>{{ record.phone }}</td>
+                                <td>{{ record.email }}</td>
+                                <td>{{ record.specialist }}</td>
+                                <td>{{ record.patient_condition }}</td>
+                                <td><a href="javascript:void(0);" onclick="startVideoCall('{{ record.id }}')">Video Call</a></td>
                             </tr>
                             {% endfor %}
                         </tbody>

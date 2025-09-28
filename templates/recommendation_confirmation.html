@@ -121,7 +121,7 @@
                 </div>
 
                 <div class="user">
-                    <img src="../static/assets/images/saabu.jpg" alt="">
+                    <img src="../static/assets/images/saabu.png" alt="">
                 </div>
             </div>
 
@@ -130,7 +130,8 @@
                     <h1 style="text-align: center;"><b>Your Recommended Doctor Details are:</b></h2>
                     <br>
                     <!-- <p style="text-align: left; font-size: 25px;"><b><strong>Appointment Token: {{token}}</strong></b></p> -->
-                    <p style="text-align: left; font-size: 25px;"><b><strong>Recommended Specialist: {{ recommended_doctor }}</strong></b></p>
+                    <p style="text-align: left; font-size: 25px;"><b><strong>Specialist Type: {{ specialist_type }}</strong></b></p>
+                    <p style="text-align: left; font-size: 25px;"><b><strong>Doctor Name: {{ recommended_doctor if recommended_doctor else 'N/A' }}</strong></b></p>
                     <p style="text-align: left; font-size: 25px;"><b><strong>Reason for booking this appointment: {{ form_data['patient_condition'] }} </strong></p>
                     <p style="text-align: left; font-size: 25px;"><b><strong>Medical History: {{ form_data['medical-history'] }} </strong></p>  
                         <form action="/confirm_booking_appointment">

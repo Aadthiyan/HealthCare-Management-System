@@ -112,12 +112,20 @@
                 </div>
 
                 <div class="user">
-                    <img src="../static/assets/images/saabu.jpg">
+                    <img src="../static/assets/images/saabu.png">
                 </div>
             </div>
             <br>
             <br>
-            <p style="text-align: center;font-size: 30px" ><b>Book your Appointment</b></p>
+
+                        {% with messages = get_flashed_messages(with_categories=true) %}
+                            {% if messages %}
+                                {% for category, message in messages %}
+                                    <div class="alert alert-{{ category }}" style="text-align:center;">{{ message }}</div>
+                                {% endfor %}
+                            {% endif %}
+                        {% endwith %}
+                        <p style="text-align: center;font-size: 30px" ><b>Book your Appointment</b></p>
 
             <br>
             <!-- Add a form inside the container -->

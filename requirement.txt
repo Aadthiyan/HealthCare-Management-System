@@ -10,7 +10,6 @@ Flask-MySQLdb
 Flask-SQLAlchemy
 keras
 mysql-connector-python
-mysqlclient==2.0.0
 nltk
 numpy
 pandas

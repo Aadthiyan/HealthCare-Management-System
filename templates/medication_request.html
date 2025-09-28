@@ -113,7 +113,7 @@
                 </div>
 
                 <div class="user">
-                    <img src="../static/assets/images/saabu.jpg">
+                    <img src="../static/assets/images/saabu.png">
                 </div>
             </div>
             <br>
@@ -124,15 +124,25 @@
             <!-- Add a form inside the container -->
             <center>
             <h1>Medicine Recommender System</h1>
-            <form method="post" action="/recommend_medicine">
+            <form method="post" action="/medicine_request">
                 <label for="medicine_name">Type your medicine name whose alternative is to be recommended:</label><br>
-                <select id="medicine_name" name="medicine_name">
+                <select id="medicine_name" name="medicine">
                     {% for medicine in medicines %}
-                    <option value="{{ medicine }}">{{ medicine }}</option>
+                    <option value="{{ medicine }}" {% if selected_medicine == medicine %}selected{% endif %}>{{ medicine }}</option>
                     {% endfor %}
                 </select><br>
-                <input type="submit" value="Recommend Medicine" style="    margin-top: 30px;margin-right:100px">
+                <input type="submit" value="Recommend Medicine" style="margin-top: 30px;margin-right:100px">
             </form>
+
+            {% if recommended %}
+            <div style="margin-top:40px;text-align:left">
+                <h2>Recommended Medicines:</h2>
+                {% for recommendation in recommended %}
+                    <p>{{ loop.index }}. {{ recommendation }}</p>
+                    <p>Click here -> <a href="https://pharmeasy.in/search/all?name={{ recommendation }}" target="_blank">Pharmeasy</a></p>
+                {% endfor %}
+            </div>
+            {% endif %}
         </center>
 
     <script src="{{ url_for('static', filename='admin.js') }}"></script>

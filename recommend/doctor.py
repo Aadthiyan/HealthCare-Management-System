@@ -56,28 +56,96 @@ class RecommendationModel:
         # Return the top-n most similar appointments
         return appointment_indices
 
-    def recommend_doctor(self, patient_condition):
-        # Check if the condition exists in the mapping for specialists
+    def recommend_doctor(self, patient_condition, num_recommendations=1):
+        """
+        Returns a tuple: (specialist_type, doctor_name)
+        """
+        import difflib, random
+        # 1. Try exact match in specialists
         if patient_condition in self.specialist_condition_to_index:
-            condition_index = self.specialist_condition_to_index[patient_condition]
-            if 0 <= condition_index < len(self.specialist_doctors):
-                recommended_doctor = self.specialist_doctors[condition_index]
-                return recommended_doctor
-            else:
-                return "Invalid condition index"
-        else:
-            # Check if the condition exists in the mapping for general physicians
-            if patient_condition in self.general_physician_condition_to_index:
-                condition_index = self.general_physician_condition_to_index[patient_condition]
-                if 0 <= condition_index < len(self.general_physician_doctors):
-                    recommended_doctor = self.general_physician_doctors[condition_index]
-                    return recommended_doctor
-                else:
-                    return "Invalid condition index for general physicians"
-            else:
-                # If condition is not recognized for both specialists and general physicians, recommend a default general physician
-                default_general_physician = self.general_physician_doctors[0]  # Assuming the first entry is the default general physician
-                return default_general_physician
+            idx = self.specialist_condition_to_index[patient_condition]
+            specialist_type = self.specialist_dataset.iloc[idx]['Specialist'] if 'Specialist' in self.specialist_dataset.columns else 'Specialist'
+            doctor_name = self.specialist_doctors[idx]
+            return specialist_type, doctor_name
+        # 2. Try exact match in general physicians
+        if patient_condition in self.general_physician_condition_to_index:
+            idx = self.general_physician_condition_to_index[patient_condition]
+            specialist_type = self.general_physician_dataset.iloc[idx]['Specialist'] if 'Specialist' in self.general_physician_dataset.columns else 'General Physician'
+            doctor_name = self.general_physician_doctors[idx]
+            return specialist_type, doctor_name
+        # 3. Fuzzy match in specialists
+        close_specialist = difflib.get_close_matches(patient_condition, self.specialist_condition_to_index.keys(), n=1, cutoff=0.7)
+        if close_specialist:
+            idx = self.specialist_condition_to_index[close_specialist[0]]
+            specialist_type = self.specialist_dataset.iloc[idx]['Specialist'] if 'Specialist' in self.specialist_dataset.columns else 'Specialist'
+            doctor_name = self.specialist_doctors[idx]
+            return specialist_type, doctor_name
+        # 4. Fuzzy match in general physicians
+        close_general = difflib.get_close_matches(patient_condition, self.general_physician_condition_to_index.keys(), n=1, cutoff=0.7)
+        if close_general:
+            idx = self.general_physician_condition_to_index[close_general[0]]
+            specialist_type = self.general_physician_dataset.iloc[idx]['Specialist'] if 'Specialist' in self.general_physician_dataset.columns else 'General Physician'
+            doctor_name = self.general_physician_doctors[idx]
+            return specialist_type, doctor_name
+        # 5. Use TF-IDF similarity to find closest condition in appointment data
+        if hasattr(self, 'tfidf_vectorizer') and hasattr(self, 'tfidf_matrix'):
+            query_vec = self.tfidf_vectorizer.transform([patient_condition])
+            cosine_similarities = linear_kernel(query_vec, self.tfidf_matrix).flatten()
+            top_idx = cosine_similarities.argmax()
+            # Try to map the most similar condition to a doctor
+            similar_condition = self.data.iloc[top_idx]['medical_condition']
+            # Try specialist first
+            if similar_condition in self.specialist_condition_to_index:
+                idx = self.specialist_condition_to_index[similar_condition]
+                specialist_type = self.specialist_dataset.iloc[idx]['Specialist'] if 'Specialist' in self.specialist_dataset.columns else 'Specialist'
+                doctor_name = self.specialist_doctors[idx]
+                return specialist_type, doctor_name
+            # Then general physician
+            if similar_condition in self.general_physician_condition_to_index:
+                idx = self.general_physician_condition_to_index[similar_condition]
+                specialist_type = self.general_physician_dataset.iloc[idx]['Specialist'] if 'Specialist' in self.general_physician_dataset.columns else 'General Physician'
+                doctor_name = self.general_physician_doctors[idx]
+                return specialist_type, doctor_name
+        # 6. Fallback: random general physician
+        doctor_name = random.choice(self.general_physician_doctors)
+        specialist_type = 'General Physician'
+        return specialist_type, doctor_name
+        import difflib, random
+        # 1. Try exact match in specialists
+        if patient_condition in self.specialist_condition_to_index:
+            idx = self.specialist_condition_to_index[patient_condition]
+            return self.specialist_doctors[idx]
+        # 2. Try exact match in general physicians
+        if patient_condition in self.general_physician_condition_to_index:
+            idx = self.general_physician_condition_to_index[patient_condition]
+            return self.general_physician_doctors[idx]
+        # 3. Fuzzy match in specialists
+        close_specialist = difflib.get_close_matches(patient_condition, self.specialist_condition_to_index.keys(), n=1, cutoff=0.7)
+        if close_specialist:
+            idx = self.specialist_condition_to_index[close_specialist[0]]
+            return self.specialist_doctors[idx]
+        # 4. Fuzzy match in general physicians
+        close_general = difflib.get_close_matches(patient_condition, self.general_physician_condition_to_index.keys(), n=1, cutoff=0.7)
+        if close_general:
+            idx = self.general_physician_condition_to_index[close_general[0]]
+            return self.general_physician_doctors[idx]
+        # 5. Use TF-IDF similarity to find closest condition in appointment data
+        if hasattr(self, 'tfidf_vectorizer') and hasattr(self, 'tfidf_matrix'):
+            query_vec = self.tfidf_vectorizer.transform([patient_condition])
+            cosine_similarities = linear_kernel(query_vec, self.tfidf_matrix).flatten()
+            top_idx = cosine_similarities.argmax()
+            # Try to map the most similar condition to a doctor
+            similar_condition = self.data.iloc[top_idx]['medical_condition']
+            # Try specialist first
+            if similar_condition in self.specialist_condition_to_index:
+                idx = self.specialist_condition_to_index[similar_condition]
+                return self.specialist_doctors[idx]
+            # Then general physician
+            if similar_condition in self.general_physician_condition_to_index:
+                idx = self.general_physician_condition_to_index[similar_condition]
+                return self.general_physician_doctors[idx]
+        # 6. Fallback: random general physician
+        return random.choice(self.general_physician_doctors)
 
 if __name__ == "__main__":
     data_path = "recommend/data/input/appointments.csv"  # Replace with the path to your dataset

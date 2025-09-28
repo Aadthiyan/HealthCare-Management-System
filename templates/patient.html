@@ -176,10 +176,10 @@
                         <tbody>
                             {% for row in data %}
             <tr>
-                <td>{{ row[0] }}</td> <!-- Assuming full_name is the first column in your database -->
-                <td>{{ row[1] }}</td> <!-- Assuming age is the second column in your database -->
-                <td>{{ row[2] }}</td> <!-- Assuming gender is the third column in your database -->
-                <td>{{ row[3] }}</td> <!-- Assuming patient_condition is the fourth column in your database -->
+                <td>{{ row.name }}</td>
+                <td>{{ row.age }}</td>
+                <td>{{ row.phone }}</td>
+                <td>{{ row.patient_condition }}</td>
             </tr>
         {% endfor %}
                         </tbody>
@@ -205,10 +205,10 @@
                         <tbody>
                             {% for row in data1 %}
                             <tr>
-                                <td>{{ row[0] }}</td> <!-- Assuming full_name is the first column in your database -->
-                                <td>{{ row[1] }}</td> <!-- Assuming age is the second column in your database -->
-                                <td>{{ row[2] }}</td> <!-- Assuming gender is the third column in your database -->
-                                <td>{{ row[3] }}</td> <!-- Assuming patient_condition is the fourth column in your database -->
+                                <td>{{ row.name }}</td>
+                                <td>{{ row.timestamp.strftime('%Y-%m-%d %H:%M') if row.timestamp else '' }}</td>
+                                <td>{{ row.token }}</td>
+                                <td>{{ row.specialist }}</td>
                             </tr>
                         {% endfor %}
                         </tbody>
