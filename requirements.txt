@@ -27,4 +27,4 @@ Werkzeug
 chardet
 openpyxl
 duckduckgo-search
-psycopg2
+psycopg2-binary
