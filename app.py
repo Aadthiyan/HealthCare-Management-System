@@ -52,9 +52,13 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 # Initialize SQLAlchemy with app
 db = SQLAlchemy(app)
 
-# Load the trained model
+# Load the trained model (optional in serverless deploys)
 model_filename = 'recommend/data/output/medi_model.pkl'
-model = joblib.load(model_filename)
+try:
+    model = joblib.load(model_filename)
+except Exception as e:
+    print(f"Warning: unable to load medi_model.pkl: {e}")
+    model = None
 
 #______________________
 ALLOWED_EXTENSIONS = ['png', 'jpg', 'jpeg']
