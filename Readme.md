@@ -1,4 +1,4 @@
-Doctor-Appointment-Booking-System using AI - Version == 1.0.0 [Made by Biswadeb Mukherjee]
+Doctor-Appointment-Booking-System using AI - Version == 1.0.0
 │
 ├── .git/                 # Git repository directory (created when you initialize a repository)
 ├── .gitignore            # Git ignore file to specify which files and directories to exclude from version control
