@@ -1,9 +1,0 @@
-Flask
-Flask-SQLAlchemy
-SQLAlchemy
-requests
-joblib
-duckduckgo-search
-psycopg2-binary
-gdown
-scikit-learn
