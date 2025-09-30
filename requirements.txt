@@ -28,3 +28,5 @@ chardet
 openpyxl
 duckduckgo-search
 psycopg2-binary
+uvicorn
+asgiref
