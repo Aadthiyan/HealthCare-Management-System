@@ -2,10 +2,10 @@ build
 debugpy
 distlib
 Faker
-Flask
+flask
 Flask-Login
 Flask-Migrate
-Flask-SQLAlchemy
+flask-SQLAlchemy
 keras
 nltk
 numpy
@@ -31,3 +31,4 @@ psycopg2-binary
 uvicorn
 asgiref
 gdown
+python-dotenv
