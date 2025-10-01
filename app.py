@@ -865,8 +865,8 @@ def recommendations_page():
 def medical_record():
     username = session.get('username')
     if not username:
-        flash('Please log in to view your medical records.', 'danger')
-        return redirect(url_for('login'))
+        # Do not redirect; show empty records for anonymous users
+        return render_template('medical_record.html', records=[])
     records = Appointment.query.filter_by(name=username).all()
     return render_template('medical_record.html', records=records)
 
@@ -882,21 +882,37 @@ def requestmedicinetemplate():
                 recommended = recommend(medicine_name)
             except Exception as e:
                 flash(f'Error recommending medicine: {e}', 'danger')
-    return render_template('medication_request.html', css_style=url_for('static', filename='style.css'), medicines=medicines['Drug_Name'].values, recommended=recommended, selected_medicine=selected_medicine)
+    if not medicines.empty and 'Drug_Name' in medicines.columns:
+        medicine_names = medicines['Drug_Name'].values
+    else:
+        medicine_names = []
+    return render_template('medication_request.html', css_style=url_for('static', filename='style.css'), medicines=medicine_names, recommended=recommended, selected_medicine=selected_medicine)
 
-# Load medicine data
-try:
-    medicines_dict = pickle.load(open('medicine_dict.pkl','rb'))
-    medicines = pd.DataFrame(medicines_dict)
-    similarity = pickle.load(open('similarity.pkl','rb'))
-except FileNotFoundError:
-    print("Medicine pickle files not found. Medicine recommendation feature will not work.")
+# Load medicine data (optional)
+DISABLE_MEDICINE = os.environ.get('DISABLE_MEDICINE') == '1'
+if DISABLE_MEDICINE:
     medicines = pd.DataFrame()
     similarity = []
+else:
+    try:
+        medicines_dict = pickle.load(open('medicine_dict.pkl','rb'))
+        medicines = pd.DataFrame(medicines_dict)
+        similarity = pickle.load(open('similarity.pkl','rb'))
+    except Exception:
+        # Silent disable if files are not compatible or missing
+        medicines = pd.DataFrame()
+        similarity = []
 
 def recommend(medicine):
     try:
-        index = medicines[medicines['Drug_Name'] == medicine].index[0]
+        if medicines.empty or 'Drug_Name' not in medicines.columns or not similarity:
+            return []
+        # Case-insensitive match on drug name
+        match = medicines['Drug_Name'].str.lower() == str(medicine).lower()
+        index_list = medicines[match].index.tolist()
+        if not index_list:
+            return []
+        index = index_list[0]
         distances = sorted(list(enumerate(similarity[index])), reverse=True, key=lambda x: x[1])
         recommended_medicine = []
         for i in distances[1:6]:
