@@ -38,15 +38,18 @@ import os
 app = Flask(__name__)
 app.secret_key = SECRET_KEY
 
-# Configure PostgreSQL Database using environment variables
-PG_HOST = os.environ.get('PG_HOST', 'localhost')
-PG_PORT = os.environ.get('PG_PORT', '5432')
-PG_DB = os.environ.get('PG_DB', 'healthcare')
-PG_USER = os.environ.get('PG_USER', 'postgres')
-PG_PASSWORD = os.environ.get('PG_PASSWORD', 'root')
+# Configure Database - Use SQLite for development
+# To use PostgreSQL, set DATABASE_URL environment variable
+DATABASE_URL = os.environ.get('DATABASE_URL')
 
-# Configure database URI
-app.config['SQLALCHEMY_DATABASE_URI'] = f'postgresql://{PG_USER}:{PG_PASSWORD}@{PG_HOST}:{PG_PORT}/{PG_DB}'
+if DATABASE_URL:
+    # Use PostgreSQL if DATABASE_URL is set
+    app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URL
+else:
+    # Default to SQLite for local development
+    basedir = os.path.abspath(os.path.dirname(__file__))
+    app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{os.path.join(basedir, "instance", "database.db")}'
+
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Initialize SQLAlchemy with app
