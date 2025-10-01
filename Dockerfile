@@ -22,4 +22,4 @@ COPY . .
 EXPOSE 8000
 
 # Run Uvicorn (app:app → replace with your FastAPI/ASGI app module name)
-CMD ["uvicorn", "asgi:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["sh", "-c", "uvicorn asgi:app --host 0.0.0.0 --port ${PORT}"]
